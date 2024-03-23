@@ -145,6 +145,24 @@ export default function Cart({ navigation, route }) {
               }}>
               {item.nama_barang}
             </Text>
+            <View style={{
+              justifyContent: 'center',
+              alignItems: 'flex-start',
+
+            }}>
+              <Text
+                style={{
+                  marginVertical: 2,
+                  fontFamily: fonts.secondary[600],
+                  fontSize: windowWidth / 30,
+                  color: colors.white,
+                  paddingHorizontal: 10,
+                  borderRadius: 5,
+                  backgroundColor: colors.black,
+                }}>
+                Ukuran : {item.ukuran}
+              </Text>
+            </View>
 
             <Text
               style={{
@@ -471,7 +489,7 @@ export default function Cart({ navigation, route }) {
                 textFormat += `----------------------------------%0A%0A`
 
                 data.map((item, index) => {
-                  textFormat += `${index + 1}) ${item.nama_barang} (kode : ${item.kode_barang})%0A${new Intl.NumberFormat().format(item.harga)} x ${item.qty} = Rp ${new Intl.NumberFormat().format(item.total)}%0A`;
+                  textFormat += `${index + 1}) ${item.nama_barang} (kode : ${item.kode_barang})%0AUkuran : *${item.ukuran}*%0A${new Intl.NumberFormat().format(item.harga)} x ${item.qty} = Rp ${new Intl.NumberFormat().format(item.total)}%0A`;
                 })
 
                 textFormat += `----------------------------------%0A%0A`

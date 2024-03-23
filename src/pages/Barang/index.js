@@ -170,22 +170,7 @@ export default function ({ navigation, route }) {
         }}>
         {item.nama_barang} {item.kode_barang}
       </Text>
-      <View style={{
-        flexDirection: 'row',
-        alignItems: 'center',
-        paddingHorizontal: 10,
-      }}>
-        <Icon type='ionicon' name='shirt' size={12} color={colors.warning} />
-        <Text
-          style={{
-            padding: 5,
-            fontSize: windowWidth / 30,
-            color: colors.black, borderRadius: 2,
-            fontFamily: fonts.secondary[400],
-          }}>
-          Stok : {item.stok}
-        </Text>
-      </View>
+
 
 
 

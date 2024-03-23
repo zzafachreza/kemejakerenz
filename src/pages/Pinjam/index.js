@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   TouchableOpacity,
+  FlatList,
 } from 'react-native';
 import { colors } from '../../utils/colors';
 import { fonts, windowHeight, windowWidth } from '../../utils/fonts';
@@ -19,6 +20,7 @@ import { showMessage } from 'react-native-flash-message';
 import { getData, storeData, urlAPI } from '../../utils/localStorage';
 import axios from 'axios';
 import { useIsFocused } from '@react-navigation/native';
+import { TouchableWithoutFeedback } from 'react-native-gesture-handler';
 
 export default function Pinjam({ navigation, route }) {
   const item = route.params;
@@ -31,22 +33,38 @@ export default function Pinjam({ navigation, route }) {
   const [jumlah, setJumlah] = useState(1);
   const [user, setUser] = useState({});
   const [cart, setCart] = useState(0);
+  const [stk, setSTK] = useState(0);
+  const [ukuran, setUkuran] = useState('');
+  const [cek, setCek] = useState('')
 
   useEffect(() => {
     if (isFocused) {
       // modalizeRef.current.open();
+      getDataBarang();
       getData('user').then(res => {
-        console.log('data user', res);
         setUser(res);
       });
       getData('cart').then(res => {
-        console.log(res);
         setCart(res);
       });
     }
   }, [isFocused]);
 
+
+  const getDataBarang = () => {
+    axios.post(urlAPI + '/1data_variant.php', {
+      fid_barang: route.params.id,
+    }).then(res => {
+
+      setVariant(res.data);
+      console.warn(res.data);
+
+    });
+  };
+
   const modalizeRef = useRef();
+
+  const [variant, setVariant] = useState([])
 
   const onOpen = () => {
     modalizeRef.current?.open();
@@ -58,6 +76,7 @@ export default function Pinjam({ navigation, route }) {
       fid_barang: item.id,
       harga_dasar: item.harga_dasar,
       diskon: item.diskon,
+      ukuran: ukuran,
       harga: item.harga_barang,
       qty: jumlah,
       total: item.harga_barang * jumlah
@@ -117,18 +136,9 @@ export default function Pinjam({ navigation, route }) {
       <View
         style={{
           flex: 1,
-          padding: 10,
         }}>
-        <Image
-
-          style={{
-            height: windowHeight / 2,
-            width: windowWidth
-          }}
-          source={{
-            uri: item.image,
-          }}
-        />
+        <Image style={{ height: windowHeight / 2, width: '100%' }}
+          source={{ uri: item.image, }} />
 
         <View
           style={{
@@ -137,7 +147,7 @@ export default function Pinjam({ navigation, route }) {
           }}>
           <View
             style={{
-              // padding: 10,
+              padding: 10,
             }}>
             <Text
               style={{
@@ -177,7 +187,7 @@ export default function Pinjam({ navigation, route }) {
       <Modalize
         withHandle={false}
         scrollViewProps={{ showsVerticalScrollIndicator: false }}
-        snapPoint={255}
+        snapPoint={windowHeight / 2}
         HeaderComponent={
           <View style={{ padding: 10 }}>
             <View style={{ flexDirection: 'row' }}>
@@ -208,15 +218,59 @@ export default function Pinjam({ navigation, route }) {
         }
 
         ref={modalizeRef}>
-        <View style={{ flex: 1, height: windowWidth / 2 }}>
+        <View style={{ flex: 1, }}>
           <View style={{ padding: 10, flex: 1 }}>
+
+            {variant.length == 0 &&
+
+
+              <Text style={{ fontFamily: fonts.secondary[600], color: colors.border, marginBottom: 10, }}>Ukuran untuk produk ini belum ada</Text>
+            }
+            {variant.length > 0 &&
+
+              <>
+                <Text style={{ fontFamily: fonts.secondary[600], color: colors.black, marginBottom: 10, }}>Silahkan Pilih Ukuran</Text>
+
+
+                <FlatList showsVerticalScrollIndicator data={variant} numColumns={4} renderItem={({ item, index }) => {
+                  return (
+                    <TouchableWithoutFeedback onPress={() => {
+                      console.log(item.id_variant);
+                      setCek(item.id_variant);
+                      setSTK(item.stok)
+                      setUkuran(item.ukuran)
+                    }}>
+                      <View style={{
+                        padding: 10, borderWidth: 1,
+                        borderRadius: 5,
+                        borderColor: cek.length > 0 && cek == item.id_variant ? colors.black : colors.zavalabs,
+                        backgroundColor: cek.length > 0 && cek == item.id_variant ? colors.black : colors.zavalabs,
+                        width: windowWidth / 4.7,
+                        marginHorizontal: 5,
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                      }}>
+                        <Text style={{ fontFamily: fonts.secondary[600], color: cek.length > 0 && cek == item.id_variant ? colors.white : '#AAB4C8', }}>{item.ukuran}</Text>
+                      </View>
+                    </TouchableWithoutFeedback>
+                  )
+                }} />
+              </>
+
+            }
+
+            <View style={{
+              flexDirection: 'row',
+              marginTop: 10,
+            }}>
+              <Text style={{ fontFamily: fonts.secondary[600], color: colors.black, marginRight: 10 }}>Stok</Text>
+              <Text style={{ fontFamily: fonts.secondary[800], color: colors.danger, fontSize: 25 }}>{stk}</Text>
+            </View>
+
+
             <View style={{ flexDirection: 'row', marginTop: 20 }}>
               <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontFamily: fonts.secondary[600],
-                    color: colors.black,
-                  }}>
+                <Text style={{ fontFamily: fonts.secondary[600], color: colors.black, }}>
                   Jumlah
                 </Text>
               </View>
@@ -280,26 +334,28 @@ export default function Pinjam({ navigation, route }) {
             </View>
 
 
-            <View style={{ marginTop: 15 }}>
-              <TouchableOpacity
-                onPress={addToCart}
-                style={{
-                  backgroundColor: colors.secondary,
-                  borderRadius: 10,
-                  padding: 15,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
-                <Text
+            {stk > 0 &&
+              <View style={{ marginTop: 15 }}>
+                <TouchableOpacity
+                  onPress={addToCart}
                   style={{
-                    fontFamily: fonts.secondary[600],
-                    fontSize: windowWidth / 22,
-                    color: colors.white,
+                    backgroundColor: colors.secondary,
+                    borderRadius: 10,
+                    padding: 15,
+                    justifyContent: 'center',
+                    alignItems: 'center',
                   }}>
-                  SIMPAN
-                </Text>
-              </TouchableOpacity>
-            </View>
+                  <Text
+                    style={{
+                      fontFamily: fonts.secondary[600],
+                      fontSize: windowWidth / 22,
+                      color: colors.white,
+                    }}>
+                    SIMPAN
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            }
           </View>
         </View>
       </Modalize>
