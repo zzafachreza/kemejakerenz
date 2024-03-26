@@ -45,7 +45,7 @@ export default function GetStarted({ navigation }) {
   }).start();
 
   return (
-    <ImageBackground source={require('../../assets/utama.png')} style={styles.page}>
+    <SafeAreaView style={styles.page} resizeMode="cover">
       {/* <StatusBar backgroundColor={colors.secondary} barStyle="light-content" /> */}
       <View
         style={{
@@ -56,19 +56,18 @@ export default function GetStarted({ navigation }) {
         <View style={{
           backgroundColor: colors.white,
           borderRadius: 100,
-          width: 200,
-          height: 200,
           justifyContent: 'center',
           alignItems: 'center',
           marginVertical: 10,
         }}>
           <Image
-            source={require('../../assets/logo.png')}
+            source={require('../../assets/splash.png')}
             style={{
               resizeMode: 'contain',
               height: windowHeight / 3,
             }}
           />
+
         </View>
 
       </View>
@@ -76,6 +75,8 @@ export default function GetStarted({ navigation }) {
       <MyButton
         title="LOGIN"
         Icons="log-in-outline"
+
+
         warna={colors.primary}
         onPress={() => navigation.navigate('Login')}
       />
@@ -84,18 +85,14 @@ export default function GetStarted({ navigation }) {
 
       <MyButton
         title="REGISTER"
-        warna={colors.white}
-        colorText={colors.primary}
-        iconColor={colors.primary}
-        borderSize={1}
-        borderColor={colors.primary}
+        warna={colors.secondary}
         Icons="create-outline"
 
         onPress={() => navigation.navigate('Register')}
       />
 
       <Animated.View style={{ height: top }} />
-    </ImageBackground>
+    </SafeAreaView>
   );
 }
 

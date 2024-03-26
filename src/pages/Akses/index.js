@@ -2,10 +2,9 @@ import { SafeAreaView, StyleSheet, Text, View, TouchableOpacity, ScrollView, Act
 import React, { useEffect, useState } from 'react'
 import { fonts, windowWidth } from '../../utils/fonts';
 import { colors } from '../../utils/colors';
-import axios from 'axios';
 
 export default function Akses({ navigation, route }) {
-
+  const item = route.params;
   console.log(route.params);
 
   const [open, setOpen] = useState(false)
@@ -14,30 +13,33 @@ export default function Akses({ navigation, route }) {
   useEffect(() => {
 
     const dt = {
-      api_key: '4c450715739fdfc443e4fce800bca3ac9a07162e84f6267a58589a4246137084',
-      awb: route.params.nomor_resi,
+      waybill: route.params.nomor_resi,
       courier: route.params.kode_kurir,
-
     };
-
-    axios.get('https://api.binderbyte.com/v1/track?api_key=4c450715739fdfc443e4fce800bca3ac9a07162e84f6267a58589a4246137084&courier=' + route.params.kode_kurir + '&awb=' + route.params.nomor_resi).then(resp => {
-      console.log(resp.data.data);
-
-      if (resp.data.status !== 200) {
-        alert('Nomor resi tidak ditemukan !');
-        navigation.goBack();
-      } else {
-        setData(resp.data.data);
-        setOpen(true);
-      }
-
-    }).catch((error) => {
-      alert('Nomor resi tidak ditemukan !');
-      navigation.goBack();
-    })
+    console.warn('kirim ongkir', dt)
 
 
+    fetch('https://pro.rajaongkir.com/api/waybill', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        'key': '5106929e87e49fdd84a96e55f515f522'
+      },
+      body: JSON.stringify(dt)
+    }).then((response) => response.json())
+      .then((json) => {
 
+        if (json.rajaongkir.status.code == 400) {
+          console.log(json.rajaongkir);
+          Alert.alert('Informasi Lacak Resi', 'Maaf nomor resi Anda tidak valid !')
+        } else {
+          console.log(json.rajaongkir.result.manifest);
+          setData(json.rajaongkir.result);
+          setOpen(true);
+        }
+
+      })
   }, [])
 
   const MyList = ({ judul, isi }) => {
@@ -46,11 +48,9 @@ export default function Akses({ navigation, route }) {
         flexDirection: 'row',
         padding: 10,
         backgroundColor: colors.white,
-        borderBottomWidth: 1,
-        borderBottomColor: colors.border,
       }}>
         <View style={{
-          flex: 1,
+          flex: 0.5,
           justifyContent: 'center'
         }}>
           <Text style={{
@@ -65,7 +65,7 @@ export default function Akses({ navigation, route }) {
           justifyContent: 'flex-start',
         }}>
           <Text style={{
-            fontFamily: fonts.secondary[600],
+            fontFamily: fonts.secondary[400],
             fontSize: windowWidth / 30,
             color: colors.black,
 
@@ -152,32 +152,32 @@ export default function Akses({ navigation, route }) {
           <Text style={{
             fontFamily: fonts.secondary[600],
             fontSize: windowWidth / 30,
-            color: colors.danger,
+            color: colors.black,
             margin: 10,
 
           }}>Informasi Pengiriman</Text>
 
-          <MyList judul="Nomor Resi" isi={data.summary.awb} />
-          <MyList judul="Tanggal Pengiriman" isi={data.summary.date} />
-          <MyList judul="Ekspedisi" isi={data.summary.courier} />
+          <MyList judul="Nomor Resi" isi={item.nomor_resi} />
+          <MyList judul="Tanggal Pengiriman" isi={data.summary.waybill_date} />
+          <MyList judul="Ekspedisi" isi={data.summary.courier_name} />
           <MyList judul="Status" isi={data.summary.status} />
-          <MyList judul="Pengirim" isi={data.detail.shipper} />
-          <MyList judul="Asal" isi={data.detail.origin} />
-          <MyList judul="Penerima" isi={data.detail.receiver} />
-          <MyList judul="Tujuan" isi={data.detail.destination} />
+          <MyList judul="Pengirim" isi={data.summary.shipper_name} />
+          <MyList judul="Asal" isi={data.summary.origin} />
+          <MyList judul="Penerima" isi={data.summary.receiver_name} />
+          <MyList judul="Tujuan" isi={data.summary.destination} />
 
           <Text style={{
             fontFamily: fonts.secondary[600],
             fontSize: windowWidth / 30,
-            color: colors.danger,
+            color: colors.black,
             margin: 10,
 
           }}>Riwayat Pengiriman</Text>
 
 
-          {data.history.map(i => {
+          {data.manifest.map(i => {
             return (
-              <MyList2 judul={i.date} isi={i.desc} />
+              <MyList2 judul={i.manifest_date} jam={i.manifest_time} isi={i.manifest_description} kota={i.city_name} />
             )
           })}
 

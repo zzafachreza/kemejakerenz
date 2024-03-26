@@ -21,14 +21,18 @@ import axios from 'axios';
 export default function Splash({ navigation }) {
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
+  const scaleLogo = new Animated.Value(10);
+  const scaleRadius = new Animated.Value(0);
 
-  const scaleBottom = new Animated.Value(0.4);
-
-  Animated.timing(scaleBottom, {
-    toValue: 0.3,
+  Animated.timing(scaleLogo, {
+    toValue: windowWidth / 1.5,
     duration: 1000,
   }).start();
 
+  Animated.timing(scaleRadius, {
+    toValue: 100,
+    duration: 1000,
+  }).start();
 
 
   useEffect(() => {
@@ -39,7 +43,7 @@ export default function Splash({ navigation }) {
         // console.log('beum login');
 
         setTimeout(() => {
-          navigation.replace('Login');
+          navigation.replace('GetStarted');
         }, 1500);
       } else {
         console.log('sudah login logon');
@@ -52,52 +56,30 @@ export default function Splash({ navigation }) {
   }, []);
 
   return (
-    <ImageBackground source={require('../../assets/utama.png')} style={styles.page}>
+    <SafeAreaView style={styles.page}>
       <View
         style={{
           flex: 1,
-          justifyContent: 'flex-end',
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
 
+        <Animated.Image
+          source={require('../../assets/splash.png')}
+          style={{
+            height: scaleLogo,
+            width: scaleLogo,
+            marginBottom: 0,
+            resizeMode: 'contain'
 
-        <Animated.View style={{
-          flex: scaleBottom,
-          padding: 20,
-        }}>
-          <View style={{
-            flexDirection: 'row',
-          }}>
-            <Text style={{
-              fontFamily: fonts.secondary[400],
-              fontSize: windowWidth / 12,
-              color: colors.white
-            }}>Welcome to </Text>
-            <Image source={require('../../assets/hallo.png')} style={{
-              width: 40,
-              height: 40,
-              resizeMode: 'contain'
-            }} />
-          </View>
-          <Text style={{
-            marginTop: 10,
-            fontFamily: fonts.secondary[800],
-            fontSize: windowWidth / 10,
-            color: colors.white
-          }}>KEMEJAKERENZ</Text>
-          <Text style={{
-            marginTop: 10,
-            fontFamily: fonts.secondary[400],
-            fontSize: windowWidth / 25,
-            color: colors.white
-          }}>Temukan berbagai kemeja favoritmu{'\n'}
-            selamat belanja dan memilih.</Text>
-
-        </Animated.View>
+          }}
+        />
 
 
+        <ActivityIndicator size="large" color={colors.primary} />
 
       </View>
-    </ImageBackground >
+    </SafeAreaView >
   );
 }
 

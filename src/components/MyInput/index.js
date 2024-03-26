@@ -8,17 +8,11 @@ import { TextInput } from 'react-native-gesture-handler';
 export default function MyInput({
   onFocus,
   label,
-  nolabel = false,
-  borderColor = colors.border,
-  backgroundColor = colors.white,
-  editable,
   icon = true,
   maxLength,
   iconname,
   onChangeText,
   value,
-  borderWidth = 1,
-  textColor = colors.black,
   keyboardType,
   secureTextEntry,
   styleInput,
@@ -27,7 +21,7 @@ export default function MyInput({
   multiline,
   label2,
   styleLabel,
-  colorIcon = colors.black,
+  colorIcon = colors.primary,
 }) {
 
   const [tutup, setTutup] = useState(true);
@@ -41,46 +35,42 @@ export default function MyInput({
 
           flexDirection: 'row',
           alignItems: 'center',
-          paddingVertical: !nolabel ? 5 : 0,
+          paddingVertical: 5,
         }}>
-        {icon && !nolabel && <Icon type="ionicon" name={iconname} color={colorIcon} size={16} />}
-
-
-        {!nolabel && <Text
+        {icon && <Icon type="ionicon" name={iconname} color={colorIcon} size={16} />}
+        <Text
           style={{
             fontFamily: fonts.secondary[600],
-            color: textColor,
+            color: colors.black,
             left: icon ? 10 : 5,
             fontSize: 12,
             ...styleLabel,
           }}>
           {label}
-        </Text>}
+        </Text>
       </View>
       <View style={{
         position: 'relative'
       }}>
         <TextInput
-          editable={editable}
-          placeholderTextColor={colors.black}
           maxLength={maxLength}
           multiline={multiline}
           autoFocus={autoFocus}
           onFocus={onFocus}
+          placeholderTextColor={colors.border}
           placeholder={placeholder}
           secureTextEntry={secureTextEntry ? tutup : false}
           keyboardType={keyboardType}
-
           value={value}
           onChangeText={onChangeText}
           autoCapitalize="none"
           style={{
-            backgroundColor: backgroundColor,
-            borderColor: borderColor,
+            backgroundColor: colors.zavalabs,
+            borderColor: colors.primary,
             borderRadius: 10,
-            borderWidth: borderWidth,
+            // borderWidth: 1,
             paddingLeft: 10,
-            color: textColor,
+            color: colors.black,
             fontSize: 12,
             fontFamily: fonts.primary[400],
             ...styleInput,
@@ -102,7 +92,7 @@ export default function MyInput({
             alignItems: 'center',
             height: '100%'
           }}>
-            <Icon type="ionicon" name={!tutup ? 'eye-off' : 'eye'} color={colors.border} size={18} />
+            <Icon type="ionicon" name={!tutup ? 'eye-off' : 'eye'} color={colorIcon} size={18} />
           </TouchableOpacity>}
       </View>
 

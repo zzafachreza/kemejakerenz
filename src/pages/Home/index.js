@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   ScrollView,
   FlatList,
-  ImageBackground,
 } from 'react-native';
 import { colors } from '../../utils/colors';
 import { fonts } from '../../utils/fonts';
@@ -24,10 +23,13 @@ import 'intl/locale-data/jsonp/en';
 import LottieView from 'lottie-react-native';
 import { useIsFocused } from '@react-navigation/native';
 import { MyGap } from '../../components';
+import { Linking } from 'react-native';
 
 export default function Home({ navigation }) {
   const [user, setUser] = useState({});
   const [kategori, setKategori] = useState([]);
+
+  const [produk, setProduk] = useState([]);
   const [cart, setCart] = useState(0);
   const [token, setToken] = useState('');
 
@@ -40,8 +42,6 @@ export default function Home({ navigation }) {
       const json = JSON.stringify(remoteMessage);
       const obj = JSON.parse(json);
 
-      alert(remoteMessage)
-
       // console.log(obj);
 
       // alert(obj.notification.title)
@@ -50,12 +50,13 @@ export default function Home({ navigation }) {
 
       PushNotification.localNotification({
         /* Android Only Properties */
-        channelId: 'ayringthrift', // (required) channelId, if the channel doesn't exist, notification will not trigger.
+        channelId: 'ditokoku', // (required) channelId, if the channel doesn't exist, notification will not trigger.
         title: obj.notification.title, // (optional)
         message: obj.notification.body, // (required)
       });
     });
 
+    getDataProduk();
     getDataKategori();
 
     if (isFocused) {
@@ -64,23 +65,32 @@ export default function Home({ navigation }) {
     return unsubscribe;
   }, [isFocused]);
 
-  const [buka, setBuka] = useState({
-    a: false,
-    b: false,
-    c: false
 
-  })
+  const getDataProduk = () => {
+    axios.post(urlAPI + '/1data_barang.php').then(res => {
+      console.log('barang', res.data);
 
+      setProduk(res.data);
+    })
+  }
 
   const getDataKategori = () => {
     axios.post(urlAPI + '/1data_kategori.php').then(res => {
+      console.log('kategori', res.data);
 
       setKategori(res.data);
     })
   }
 
 
+
   const __getDataUserInfo = () => {
+
+    axios.post(urlAPI + '/company.php').then(c => {
+      console.log('comp', c.data);
+      setComp(c.data);
+    })
+
     getData('user').then(users => {
       console.log(users);
       setUser(users);
@@ -106,6 +116,8 @@ export default function Home({ navigation }) {
     });
   }
 
+  const [comp, setComp] = useState({});
+
   const windowWidth = Dimensions.get('window').width;
   const windowHeight = Dimensions.get('window').height;
   const ratio = 192 / 108;
@@ -117,6 +129,7 @@ export default function Home({ navigation }) {
         navigation.navigate('Pinjam', item);
       }}
       style={{
+        backgroundColor: colors.background1,
         flex: 1,
         margin: 5,
 
@@ -127,7 +140,6 @@ export default function Home({ navigation }) {
         alignSelf: 'center',
         // resizeMode: 'contain',
         width: '100%',
-        borderRadius: 10,
         height: 200,
 
       }} />
@@ -136,7 +148,7 @@ export default function Home({ navigation }) {
         <Text
           style={{
             fontSize: windowWidth / 30,
-            color: colors.black,
+            color: colors.textPrimary,
             textAlign: 'right',
             marginRight: 2,
             textDecorationLine: 'line-through',
@@ -155,8 +167,8 @@ export default function Home({ navigation }) {
           borderRadius: 5,
           textAlign: 'center',
           alignSelf: 'flex-end',
-          color: colors.white,
-          backgroundColor: colors.tertiary,
+          color: colors.secondary,
+          backgroundColor: colors.primary,
           fontFamily: fonts.secondary[600],
         }}>
         Disc {new Intl.NumberFormat().format(item.diskon)}%
@@ -187,7 +199,7 @@ export default function Home({ navigation }) {
           borderRadius: 5,
           textAlign: 'center',
           alignSelf: 'flex-end',
-          color: colors.primary,
+          color: colors.secondary,
 
           fontFamily: fonts.secondary[600],
         }}>
@@ -200,27 +212,29 @@ export default function Home({ navigation }) {
         style={{
           paddingLeft: 5,
           fontSize: windowWidth / 25,
-          color: colors.primary,
+          color: colors.price,
           fontFamily: fonts.secondary[600],
         }}>
         Rp. {new Intl.NumberFormat().format(item.harga_barang)}
       </Text>
-      {/* <Text
+      <Text
         style={{
-          padding: 5,
-          backgroundColor: colors.primary,
-          fontSize: windowWidth / 35,
-          color: colors.white, borderRadius: 2,
+          padding: 2,
+          backgroundColor: colors.tertiary,
+          fontSize: windowWidth / 40,
+          width: 60,
+          textAlign: 'center',
+          color: colors.black, borderRadius: 2,
           fontFamily: fonts.secondary[400],
         }}>
         {item.nama_kategori}
-      </Text> */}
+      </Text>
       <Text
         style={{
           padding: 5,
           height: 50,
           fontSize: windowWidth / 30,
-          color: colors.black, borderRadius: 2,
+          color: colors.textPrimary, borderRadius: 2,
           fontFamily: fonts.secondary[400],
         }}>
         {item.nama_barang}
@@ -234,6 +248,44 @@ export default function Home({ navigation }) {
     </TouchableOpacity>
   );
 
+  const __renderItemKategori = ({ item }) => {
+    return (
+      <TouchableOpacity onPress={() => navigation.navigate('Barang', {
+        key: item.id,
+        id_user: user.id
+      })} style={{
+        backgroundColor: colors.background1,
+        margin: 3,
+        flex: 1,
+
+      }}>
+
+        <View style={{
+          justifyContent: 'center',
+          alignItems: 'center',
+
+        }}>
+          <Image style={{
+            width: '100%',
+            borderRadius: 10,
+            height: 100,
+            width: 100,
+
+
+          }} source={{
+            uri: item.image
+          }} />
+        </View>
+        <Text style={{
+          textAlign: 'center',
+          color: colors.textPrimary,
+          fontFamily: fonts.secondary[600],
+          fontSize: windowWidth / 30,
+        }}>{item.nama_kategori}</Text>
+      </TouchableOpacity>
+    )
+  }
+
 
   return (
     <SafeAreaView
@@ -246,42 +298,78 @@ export default function Home({ navigation }) {
         style={{
           height: windowHeight / 10,
           padding: 10,
-          backgroundColor: colors.white,
+          backgroundColor: colors.background1,
         }}>
 
 
         <View style={{
           flexDirection: 'row'
         }}>
-          <View style={{
+          <TouchableOpacity onPress={() => navigation.navigate('Barang', {
+            key: 0,
+            id_user: user.id
+          })} style={{
             flex: 1,
+            height: 40,
+            flexDirection: 'row',
+            backgroundColor: colors.zavalabs,
+            borderRadius: 5,
+
           }}>
-            <Text style={{
-              fontFamily: fonts.secondary[600],
-              fontSize: 15
-            }}>Selamat datang,</Text>
-            <Text style={{
-              fontFamily: fonts.secondary[800],
-              fontSize: 15
-            }}>{user.nama_lengkap}</Text>
-          </View>
 
+            <View style={{
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingLeft: 10,
+            }}>
+              <Icon type='ionicon' name="search-outline" color={colors.border} size={windowWidth / 30} />
+            </View>
+            <View style={{
+              paddingLeft: 5,
+              flex: 1,
+              justifyContent: 'center'
+            }}>
+              <Text style={{
+                fontFamily: fonts.secondary[400],
+                color: colors.border,
+                fontSize: windowWidth / 30
+              }}>Search Product</Text>
+            </View>
 
+          </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate('Cart')}
+            onPress={() => {
+              Linking.openURL('https://wa.me/' + comp.tlp);
+            }}
             style={{
               position: 'relative',
-              width: 50,
-              height: 50,
+              width: 40,
+              height: 40,
               justifyContent: 'center',
               alignItems: 'center'
 
 
             }}>
-            <Icon type='ionicon' name="cart-outline" color={colors.primary} />
+            <Icon type='ionicon' name="logo-whatsapp" color={colors.secondary} />
+
+
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate('Cart')}
+            style={{
+              position: 'relative',
+              width: 40,
+              height: 40,
+              justifyContent: 'center',
+              alignItems: 'center'
+
+
+            }}>
+            <Icon type='ionicon' name="cart-outline" color={colors.secondary} />
             <Text style={{
-              position: 'absolute', top: 2, right: 2, bottom: 5, backgroundColor: colors.black, width: 18,
+              position: 'absolute', top: 0, right: 0, bottom: 0, backgroundColor: colors.primary, width: 18,
               textAlign: 'center',
               height: 18, borderRadius: 10, color: colors.white
             }} >{cart}</Text>
@@ -292,72 +380,59 @@ export default function Home({ navigation }) {
 
       </View>
 
-      <ScrollView>
-        <MyGap jarak={10} />
+      <ScrollView style={{
+        backgroundColor: colors.background1
+      }}>
+
         <MyCarouser />
 
-
-
-        <View style={{
-          flex: 1,
-          padding: 20,
-          borderTopWidth: 1,
-          borderTopColor: colors.border,
-          marginTop: 20,
-        }}>
+        {/* list Kategoti */}
+        <View>
           <View style={{
             flexDirection: 'row',
             flex: 1,
-            marginVertical: 10,
+            paddingHorizontal: 10,
+            padding: 10,
             alignItems: 'center'
           }}>
-            <Icon type='ionicon' name="grid" color={colors.black} size={20} />
+            <Icon type='ionicon' name="grid-outline" color={colors.textPrimary} />
             <Text style={{
               left: 10,
-              color: colors.black,
+              color: colors.textPrimary,
               fontFamily: fonts.secondary[600],
-              fontSize: windowWidth / 30,
+              fontSize: windowWidth / 25,
             }}>Kategori Produk</Text>
           </View>
-
-
-          <FlatList data={kategori} numColumns={2} renderItem={({ item }) => {
-            return (
-              <TouchableWithoutFeedback onPress={() => navigation.navigate('Barang', {
-                key: item.id
-              })}>
-                <View style={{
-                  flex: 1,
-                  margin: 10,
-                  borderWidth: 1,
-                  borderColor: colors.border,
-                  borderRadius: 10,
-                  overflow: 'hidden'
-                }}>
-                  <Image style={{
-                    width: '100%',
-                    height: 200,
-                  }} source={{
-                    uri: item.image
-                  }} />
-                  <View style={{
-                    padding: 10,
-                  }}>
-                    <Text style={{
-                      fontFamily: fonts.secondary[600],
-                      fontSize: 12
-                    }}>
-                      {item.nama_kategori}
-                    </Text>
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
-            )
-          }} />
-
+          <View style={{
+            flex: 1,
+          }}>
+            <FlatList showsHorizontalScrollIndicator={false} numColumns={1} horizontal data={kategori} renderItem={__renderItemKategori} />
+          </View>
         </View>
 
-
+        {/* list Product */}
+        <View>
+          <View style={{
+            flexDirection: 'row',
+            flex: 1,
+            paddingHorizontal: 10,
+            padding: 10,
+            alignItems: 'center'
+          }}>
+            <Icon type='ionicon' name="newspaper-outline" color={colors.textPrimary} />
+            <Text style={{
+              left: 10,
+              color: colors.textPrimary,
+              fontFamily: fonts.secondary[600],
+              fontSize: windowWidth / 25,
+            }}>Product Terbaru</Text>
+          </View>
+          <View style={{
+            flex: 1
+          }}>
+            <FlatList numColumns={2} data={produk} renderItem={__renderItem} />
+          </View>
+        </View>
       </ScrollView>
 
     </SafeAreaView>

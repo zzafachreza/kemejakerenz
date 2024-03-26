@@ -45,7 +45,6 @@ export default function ({ navigation, route }) {
     axios.post(urlAPI + '/1data_barang.php', {
       key: route.params.key,
       key2: y,
-      id_user: route.params.id_user
     }).then(res => {
       setMykey('');
       console.warn(res.data);
@@ -60,9 +59,7 @@ export default function ({ navigation, route }) {
         navigation.navigate('Pinjam', item);
       }}
       style={{
-        width: windowWidth / 2.2,
-        borderRadius: 10,
-        overflow: 'hidden',
+        flex: 1,
         margin: 5,
         borderWidth: 1,
         borderColor: colors.zavalabs2,
@@ -102,7 +99,7 @@ export default function ({ navigation, route }) {
           textAlign: 'center',
           alignSelf: 'flex-end',
           color: colors.white,
-          backgroundColor: colors.danger,
+          backgroundColor: colors.tertiary,
           fontFamily: fonts.secondary[600],
         }}>
         Disc {new Intl.NumberFormat().format(item.diskon)}%
@@ -140,15 +137,7 @@ export default function ({ navigation, route }) {
 
       </Text>}
 
-      <Text
-        style={{
-          padding: 5,
-          fontSize: windowWidth / 35,
-          color: colors.black,
-          fontFamily: fonts.secondary[800],
-        }}>
-        {item.nama_kategori}
-      </Text>
+
 
       <Text
         style={{
@@ -159,18 +148,26 @@ export default function ({ navigation, route }) {
         }}>
         Rp. {new Intl.NumberFormat().format(item.harga_barang)}
       </Text>
-
+      {/* <Text
+        style={{
+          padding: 5,
+          backgroundColor: colors.primary,
+          fontSize: windowWidth / 35,
+          color: colors.white, borderRadius: 2,
+          fontFamily: fonts.secondary[400],
+        }}>
+        {item.nama_kategori}
+      </Text> */}
       <Text
         style={{
-          height: 40,
           padding: 5,
+          height: 50,
           fontSize: windowWidth / 30,
           color: colors.black, borderRadius: 2,
           fontFamily: fonts.secondary[400],
         }}>
-        {item.nama_barang} {item.kode_barang}
+        {item.nama_barang}
       </Text>
-
 
 
 

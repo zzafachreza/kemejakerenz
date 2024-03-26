@@ -103,11 +103,32 @@ export default function Cart({ navigation, route }) {
   };
 
 
+  const [pilih, setPilih] = useState({
+    nama: '',
+    telepon: '',
+  })
+
+  const WA = [
+    {
+      nama: 'Gudang',
+      telepon: '6281287893388'
+    },
+    {
+      nama: 'Toko Blok A',
+      telepon: '6285697730882'
+    },
+    {
+      nama: 'Toko Blok B',
+      telepon: '6281910969188'
+    },
+  ]
+
+
 
 
   var sub = 0;
   var beratTotal = 0;
-  data.map((item, key) => {
+  data.filter(i => i.cek > 0).map((item, key) => {
     sub += parseFloat(item.total);
     beratTotal += parseFloat(item.berat);
   });
@@ -125,6 +146,27 @@ export default function Cart({ navigation, route }) {
             padding: 10,
             flexDirection: 'row'
           }}>
+
+          <TouchableOpacity onPress={() => {
+
+            let TMP = [...data];
+            if (TMP[index].cek > 0) {
+              TMP[index].cek = 0;
+            } else {
+              TMP[index].cek = 1;
+            }
+            setData(TMP)
+
+          }} style={{
+            width: 40,
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center'
+          }}>
+
+            <Icon type='ionicon' name={item.cek > 0 ? 'checkbox' : 'checkbox-outline'} />
+
+          </TouchableOpacity>
           <View style={{
             paddingHorizontal: 10,
           }}>
@@ -145,25 +187,16 @@ export default function Cart({ navigation, route }) {
               }}>
               {item.nama_barang}
             </Text>
-            <View style={{
-              justifyContent: 'center',
-              alignItems: 'flex-start',
 
-            }}>
-              <Text
-                style={{
-                  marginVertical: 2,
-                  fontFamily: fonts.secondary[600],
-                  fontSize: windowWidth / 30,
-                  color: colors.white,
-                  paddingHorizontal: 10,
-                  borderRadius: 5,
-                  backgroundColor: colors.black,
-                }}>
-                Ukuran : {item.ukuran}
-              </Text>
-            </View>
-
+            <Text
+              style={{
+                fontFamily: fonts.secondary[800],
+                color: colors.danger,
+                flex: 1,
+                fontSize: windowWidth / 30,
+              }}>
+              {item.ukuran}
+            </Text>
             <Text
               style={{
                 fontFamily: fonts.secondary[400],
@@ -286,7 +319,73 @@ export default function Cart({ navigation, route }) {
     });
   };
 
+  const UploadFoto = ({ onPress1, onPress2, label, foto }) => {
+    return (
+      <View
+        style={{
+          padding: 10,
+          backgroundColor: colors.white,
+          marginVertical: 10,
+          borderWidth: 1,
+          borderRadius: 10,
+          borderColor: colors.border,
+          elevation: 2,
+        }}>
+        <Text
+          style={{
+            fontFamily: fonts.secondary[600],
+            color: colors.black,
+          }}>
+          {label}
+        </Text>
 
+        <View
+          style={{
+            flexDirection: 'row',
+          }}>
+          <View style={{
+            flex: 2
+          }}>
+            <Image
+              source={{
+                uri: foto,
+              }}
+              style={{
+                width: '100%',
+                aspectRatio: 3,
+                resizeMode: 'contain',
+              }}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              paddingRight: 5,
+            }}>
+            <MyButton
+              onPress={onPress1}
+              colorText={colors.white}
+              title="KAMERA"
+              warna={colors.primary}
+            />
+          </View>
+          <View
+            style={{
+              flex: 1,
+              paddingLeft: 5,
+            }}>
+            <MyButton
+              onPress={onPress2}
+              title="GALLERY"
+              colorText={colors.white}
+              warna={colors.secondary}
+            />
+          </View>
+
+        </View>
+      </View>
+    );
+  };
 
   return (
     <SafeAreaView
@@ -301,7 +400,7 @@ export default function Cart({ navigation, route }) {
       <Modalize
         withHandle={false}
         scrollViewProps={{ showsVerticalScrollIndicator: false }}
-        snapPoint={windowHeight / 3.4}
+        snapPoint={windowHeight / 3}
         HeaderComponent={
           <View style={{ padding: 10 }}>
             <View style={{ flexDirection: 'row' }}>
@@ -309,10 +408,18 @@ export default function Cart({ navigation, route }) {
                 <Text
                   style={{
                     fontFamily: fonts.secondary[400],
-                    fontSize: windowWidth / 35,
+                    fontSize: windowWidth / 20,
                     color: colors.black,
                   }}>
                   {itemz.nama_barang}
+                </Text>
+                <Text
+                  style={{
+                    fontFamily: fonts.secondary[800],
+                    fontSize: windowWidth / 35,
+                    color: colors.danger,
+                  }}>
+                  Ukuran : {itemz.ukuran}
                 </Text>
                 <Text
                   style={{
@@ -433,7 +540,43 @@ export default function Cart({ navigation, route }) {
           </View>
         </View>
       </Modalize>
+
+
+      <View style={{
+        flexDirection: 'row'
+      }}>
+        {WA.map(i => {
+          return (
+            <TouchableWithoutFeedback onPress={() => {
+              setPilih(i)
+            }}>
+              <View style={{
+                padding: 10,
+                flex: 1,
+                backgroundColor: pilih.telepon == i.telepon ? colors.success : colors.white,
+                borderColor: colors.white,
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 10,
+                borderWidth: 1,
+                marginHorizontal: 10,
+                marginVertical: 10,
+                flexDirection: 'row',
+              }}>
+                <Icon type='ionicon' name='logo-whatsapp' size={12} color={pilih.telepon == i.telepon ? colors.white : colors.black} />
+                <Text style={{
+                  left: 5,
+                  fontFamily: fonts.secondary[600],
+                  fontSize: 12,
+                  color: pilih.telepon == i.telepon ? colors.white : colors.black,
+                }}>{i.nama}</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          )
+        })}
+      </View>
       {!loading &&
+
         <View
           style={{
             flexDirection: 'row',
@@ -470,61 +613,66 @@ export default function Cart({ navigation, route }) {
           <TouchableOpacity
             onPress={() => {
 
-              // setLoading(true);
+              if (pilih.nama.length > 0) {
+                setLoading(true);
+                getData('user').then(res => {
 
-              getData('user').then(res => {
+                  const dd = {
+                    fid_user: res.id,
+                    nama_lengkap: res.nama_lengkap,
+                    telepon: res.telepon,
+                    harga_total: sub,
+                    berat_total: beratTotal
+                  }
 
-                const dd = {
-                  fid_user: res.id,
-                  nama_lengkap: res.nama_lengkap,
-                  telepon: res.telepon,
-                  harga_total: sub,
-                  berat_total: beratTotal
-                }
+                  console.log('pengguna', data);
+                  let textFormat = '*Pesanan Kemejakerenz*%0AHallo Kak Saya Mau Order%0A%0A';
+                  textFormat += `Nama Lengkap : ${res.nama_lengkap}%0A`
+                  textFormat += `Telepon       : ${res.telepon}%0A`
+                  textFormat += `----------------------------------%0A%0A`
 
-                console.log('pengguna', data);
-                let textFormat = '*Pesanan Kemejakerenz*%0AHallo Kak Saya Mau Order%0A%0A';
-                textFormat += `Nama Lengkap : ${res.nama_lengkap}%0A`
-                textFormat += `Telepon       : ${res.telepon}%0A`
-                textFormat += `----------------------------------%0A%0A`
+                  data.filter(i => i.cek > 0).map((item, index) => {
+                    textFormat += `${index + 1}) ${item.nama_barang} (kode : ${item.kode_barang})%0AUkuran : *${item.ukuran}*%0A${new Intl.NumberFormat().format(item.harga)} x ${item.qty} = Rp ${new Intl.NumberFormat().format(item.total)}%0A`;
+                  })
 
-                data.map((item, index) => {
-                  textFormat += `${index + 1}) ${item.nama_barang} (kode : ${item.kode_barang})%0AUkuran : *${item.ukuran}*%0A${new Intl.NumberFormat().format(item.harga)} x ${item.qty} = Rp ${new Intl.NumberFormat().format(item.total)}%0A`;
+                  textFormat += `----------------------------------%0A%0A`
+                  textFormat += `*Total : ${new Intl.NumberFormat().format(sub)}*`
+
+                  console.log(textFormat);
+
+                  Linking.openURL(`https://wa.me/${pilih.telepon}?text=` + textFormat)
+
+                  setLoading(false);
+                  // setTimeout(() => {
+                  //   setLoading(false);
+                  //   navigation.navigate('Checkout', dd)
+                  // }, 1500)
+
+
+                  // console.log(dd);
+                  // axios.post(urlAPI + '/1add_transaksi.php', dd).then(rr => {
+                  //   console.log(rr.data);
+
+                  //   setTimeout(() => {
+                  //     setLoading(false);
+                  //     showMessage({
+                  //       type: 'success',
+                  //       message: 'Transaksi kamu berhasil dikirim'
+                  //     })
+                  //     navigation.replace('ListData')
+                  //   }, 1500)
+
+
+                  // })
+
+
+                });
+
+              } else {
+                showMessage({
+                  message: 'Silahkan pilih nomor whatsapp',
                 })
-
-                textFormat += `----------------------------------%0A%0A`
-                textFormat += `*Total : ${new Intl.NumberFormat().format(sub)}*`
-
-                console.log(textFormat);
-
-                Linking.openURL('https://wa.me/6281287893388?text=' + textFormat)
-
-                setLoading(false);
-                // setTimeout(() => {
-                //   setLoading(false);
-                //   navigation.navigate('Checkout', dd)
-                // }, 1500)
-
-
-                // console.log(dd);
-                // axios.post(urlAPI + '/1add_transaksi.php', dd).then(rr => {
-                //   console.log(rr.data);
-
-                //   setTimeout(() => {
-                //     setLoading(false);
-                //     showMessage({
-                //       type: 'success',
-                //       message: 'Transaksi kamu berhasil dikirim'
-                //     })
-                //     navigation.replace('ListData')
-                //   }, 1500)
-
-
-                // })
-
-
-              });
-
+              }
 
 
             }}
@@ -545,7 +693,7 @@ export default function Cart({ navigation, route }) {
                 color: colors.white,
 
               }}>
-              ORDER
+              CHECKOUT
             </Text>
           </TouchableOpacity>
 

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, Picker } from 'react-native';
 import { Icon, ListItem, Button } from 'react-native-elements';
 import { colors } from '../../utils/colors';
 import { fonts } from '../../utils/fonts';
+import { TextInput } from 'react-native-gesture-handler';
 
 export default function MyPicker({
   label,
@@ -25,33 +26,42 @@ export default function MyPicker({
         style={{
           flexDirection: 'row',
           alignItems: 'center',
-          paddingVertical: 0,
+          paddingVertical: 5,
         }}>
-        <Icon type="ionicon" name={iconname} color={colors.black} size={16} />
+        <Icon type="ionicon" name={iconname} color={colorIcon} size={16} />
         <Text
           style={{
             fontFamily: fonts.secondary[600],
-            color: colors.black,
+            color: colors.primary,
             left: 10,
-            fontSize: 14,
+            fontSize: 16,
             ...styleLabel,
           }}>
           {label}
         </Text>
       </View>
-
+      {label2 && (
+        <Text
+          style={{
+            fontFamily: fonts.secondary[600],
+            color: colors.primary,
+            left: 10,
+            fontSize: 14,
+            marginVertical: 1,
+            ...styleLabel,
+          }}>
+          {label2}
+        </Text>
+      )}
       <View style={{
         borderWidth: 1,
-        backgroundColor: colors.white,
         borderRadius: 10,
-        marginTop: 5,
         fontFamily: fonts.secondary[600],
         borderColor: colors.primary,
       }}>
-        <Picker style={{ height: 48, transform: [{ scale: 0.9 }] }}
-          selectedValue={value} onValueChange={onValueChange}>
+        <Picker selectedValue={value} onValueChange={onValueChange}>
           {data.map(item => {
-            return <Picker.Item textStyle={{ fontSize: 12 }} value={item.value} label={item.label} />;
+            return <Picker.Item value={item.value} label={item.label} />;
           })}
         </Picker>
       </View>

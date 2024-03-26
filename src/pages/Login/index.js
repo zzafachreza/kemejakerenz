@@ -10,7 +10,6 @@ import {
   Dimensions,
   ImageBackground,
   SafeAreaView,
-  Linking,
 } from 'react-native';
 import { colors } from '../../utils/colors';
 import { fonts } from '../../utils/fonts';
@@ -30,32 +29,26 @@ export default function Login({ navigation }) {
   const [show, setShow] = useState(true);
   const [token, setToken] = useState('');
   const [data, setData] = useState({
-    telepon: '',
+    email: '',
     password: '',
   });
-
-  const [comp, setComp] = useState({});
 
   useEffect(() => {
     getData('token').then(res => {
       console.log('data token,', res);
       setToken(res.token);
     });
-
-    axios.post(urlAPI + '/company.php').then(res => {
-      setComp(res.data)
-    })
   }, []);
 
   // login ok
   const masuk = () => {
-    if (data.telepon.length === 0 && data.password.length === 0) {
+    if (data.email.length === 0 && data.password.length === 0) {
       showMessage({
-        message: 'Maaf telepon dan Password masih kosong !',
+        message: 'Maaf email dan Password masih kosong !',
       });
-    } else if (data.telepon.length === 0) {
+    } else if (data.email.length === 0) {
       showMessage({
-        message: 'Maaf telepon masih kosong !',
+        message: 'Maaf email masih kosong !',
       });
     } else if (data.password.length === 0) {
       showMessage({
@@ -102,43 +95,45 @@ export default function Login({ navigation }) {
         }}>
         <View
           style={{
+            height: 220,
             flex: 1,
             justifyContent: 'center',
             alignItems: 'center',
+
+            padding: 10,
+            borderRadius: 10,
           }}>
           <Image
             source={require('../../assets/logo.png')}
             style={{
+              resizeMode: 'contain',
               width: 200,
-              height: 200,
+              // aspectRatio: 1,
             }}
           />
-          <Text
-            style={{
-              fontFamily: fonts.secondary[600],
-              fontSize: windowWidth / 18,
-              color: colors.black,
-              textAlign: 'center',
-            }}>
-            KEMEJAKERENZ
-          </Text>
-
-
         </View>
         <View style={styles.page}>
-
+          <Text
+            style={{
+              fontFamily: fonts.secondary[400],
+              fontSize: windowWidth / 20,
+              color: colors.black,
+              // maxWidth: 230,
+              textAlign: 'center',
+            }}>
+            Silahkan login untuk masuk ke aplikasi
+          </Text>
 
           <MyGap jarak={20} />
           <MyInput
-            placeholder="Masukan nomor telepon"
-            keyboardType='phone-pad'
-            label="Telepon"
-            iconname="call"
-            value={data.telepon}
+            label="Email"
+            iconname="mail"
+            placeholder="Masukan email anda"
+            value={data.email}
             onChangeText={value =>
               setData({
                 ...data,
-                telepon: value,
+                email: value,
               })
             }
           />
@@ -146,8 +141,8 @@ export default function Login({ navigation }) {
           <MyGap jarak={20} />
           <MyInput
             label="Password"
-            placeholder="*******"
             iconname="key"
+            placeholder="Masukan password anda"
             secureTextEntry={show}
             onChangeText={value =>
               setData({
@@ -156,22 +151,19 @@ export default function Login({ navigation }) {
               })
             }
           />
-
           <TouchableOpacity onPress={() => {
-            Linking.openURL('https://wa.me/' + comp.tlp)
+            navigation.navigate('Add');
           }} style={{
             paddingHorizontal: 5,
             paddingVertical: 10,
             justifyContent: 'flex-end',
-            alignItems: 'flex-end',
-            flexDirection: 'row'
+            alignItems: 'flex-end'
           }}>
             <Text style={{
               left: 5,
-              color: colors.danger,
-              fontFamily: fonts.secondary[600],
+              fontFamily: fonts.secondary[400],
               fontSize: windowWidth / 30
-            }}>Lupa Password ?</Text>
+            }}>Lupa password ?</Text>
           </TouchableOpacity>
 
 
@@ -179,29 +171,13 @@ export default function Login({ navigation }) {
           {valid && (
             <MyButton
               warna={colors.primary}
-              title="Masuk"
+              title="LOGIN"
               Icons="log-in"
               onPress={masuk}
             />
           )}
 
-          <TouchableOpacity onPress={() => {
-            navigation.navigate('Register');
-          }} style={{
-            paddingHorizontal: 5,
-            paddingVertical: 10,
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'row'
-          }}>
-            <Text style={{
-              left: 5,
-              fontFamily: fonts.secondary[600],
-              fontSize: windowWidth / 30
-            }}>Tidak Memiliki Akun ? <Text style={{
-              color: colors.danger,
-            }}>Daftar</Text></Text>
-          </TouchableOpacity>
+
         </View>
       </ScrollView>
       {

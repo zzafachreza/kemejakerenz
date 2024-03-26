@@ -88,6 +88,8 @@ export default function ({ navigation, route }) {
         </View>
         <View style={{
           flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center'
         }}>
           <Text
             style={{
@@ -101,13 +103,15 @@ export default function ({ navigation, route }) {
           </Text>
           <Text
             style={{
-              fontSize: windowWidth / 40,
+              fontSize: windowWidth / 35,
               // color: colors.white,
               textAlign: 'center',
-              color: colors.black,
-              fontFamily: fonts.secondary[400],
+              color: colors.white,
+              backgroundColor: item.tipe_bayar == "Ambil di toko" ? colors.danger : colors.secondary,
+              paddingHorizontal: 5,
+              fontFamily: fonts.secondary[600],
             }}>
-            {item.catatan}
+            {item.tipe_bayar}
           </Text>
         </View>
       </View>
@@ -129,22 +133,39 @@ export default function ({ navigation, route }) {
             fontFamily: fonts.secondary[400],
             color: colors.black,
           }}>Opsi Pengiriman</Text>
-          <Text
-            style={{
-              fontSize: windowWidth / 30,
-              fontFamily: fonts.secondary[600],
-              color: colors.black,
-            }}>
-            {item.nama_kurir}
-          </Text>
-          <Text
-            style={{
-              fontSize: windowWidth / 30,
-              fontFamily: fonts.secondary[600],
-              color: colors.primary,
-            }}>
-            {item.paket}
-          </Text>
+          {item.tipe_bayar == "Transfer Bank" && <>
+
+            <Text
+              style={{
+                fontSize: windowWidth / 30,
+                fontFamily: fonts.secondary[600],
+                color: colors.black,
+              }}>
+              {item.nama_kurir}
+            </Text>
+            <Text
+              style={{
+                fontSize: windowWidth / 30,
+                fontFamily: fonts.secondary[600],
+                color: colors.primary,
+              }}>
+              {item.paket}
+            </Text>
+
+          </>}
+
+          {item.tipe_bayar !== "Transfer Bank" && <>
+
+            <Text
+              style={{
+                fontSize: windowWidth / 30,
+                fontFamily: fonts.secondary[600],
+                color: colors.black,
+              }}>
+              Ambil di toko
+            </Text>
+
+          </>}
 
         </View>
         <View

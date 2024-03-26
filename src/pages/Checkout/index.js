@@ -47,7 +47,7 @@ export default function Checkout({ navigation, route }) {
         destination: res.fid_kota,
         total_ongkir: 0,
         harga_total: 0,
-        catatan: '',
+        tipe_bayar: 'COD',
       })
     });
 
@@ -71,14 +71,19 @@ export default function Checkout({ navigation, route }) {
 
   const simpan = () => {
     console.error('kirim', kirim);
-    if (kirim.total_ongkir == null) {
+    if (kirim.total_ongkir == null && kirim.tipe_bayar !== 'Ambil di toko') {
       showMessage({
         type: 'danger',
         message: 'Opsi pengiriman harus di isi !'
       })
+    } else if (kirim.tipe_bayar == null) {
+      showMessage({
+        type: 'danger',
+        message: 'Tipe pembayaran harus di pilih COD atau Transfer'
+      })
     } else {
       setLoading(true);
-      // console.log('kirim ke server', item);
+      console.log('kirim ke server', item);
       setTimeout(() => {
         axios
           .post(urlAPI + '/1add_transaksi.php', kirim)
@@ -313,7 +318,7 @@ export default function Checkout({ navigation, route }) {
                 <View style={{
                   padding: 20,
                 }}>
-                  <ActivityIndicator color={colors.danger} size="large" />
+                  <ActivityIndicator color={colors.primary} size="large" />
                 </View>
               )}
               {/* paket kurir */}
@@ -325,6 +330,62 @@ export default function Checkout({ navigation, route }) {
 
 
         </ScrollView>
+        <View style={{
+          flex: 0.5,
+          padding: 10,
+          flexDirection: 'row'
+        }}>
+
+          <View style={{
+            flex: 1,
+
+          }}>
+            <TouchableOpacity onPress={() => {
+              setKirim({
+                ...kirim,
+                tipe_bayar: 'Ambil di toko',
+                kode_kurir: 'jne',
+                layanan_kurir: 'Layanan Reguler',
+                paket_kurir: 'REG',
+                estimasi_kurir: '1-2',
+              })
+            }} style={{
+              padding: 10,
+              marginRight: 5,
+              backgroundColor: kirim.tipe_bayar == 'Ambil di toko' ? colors.primary : colors.white,
+              borderWidth: 1,
+              borderColor: colors.secondary
+            }}>
+              <Text style={{
+                textAlign: 'center',
+                fontFamily: fonts.secondary[600],
+              }}>Ambil di toko</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={{
+            flex: 1,
+
+          }}>
+            <TouchableOpacity onPress={() => {
+              setKirim({
+                ...kirim,
+                tipe_bayar: 'Transfer Bank'
+              })
+            }} style={{
+              padding: 10,
+              marginLeft: 5,
+              backgroundColor: kirim.tipe_bayar == 'Transfer Bank' ? colors.primary : colors.white,
+              borderWidth: 1,
+              borderColor: colors.secondary
+            }}>
+              <Text style={{
+                textAlign: 'center',
+                fontFamily: fonts.secondary[600],
+              }}>Transfer Bank</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
         <View
           style={{
             flexDirection: 'row',
@@ -341,31 +402,40 @@ export default function Checkout({ navigation, route }) {
             }}>
             Total Pembayaran
           </Text>
-          <Text
-            style={{
-              color: colors.primary,
-              fontSize: windowWidth / 20,
-              fontFamily: fonts.secondary[600],
-              padding: 10,
-            }}>
-            {/* Rp. {new Intl.NumberFormat().format(kirim.harga_total + kirim.total_ongkir)} */}
+          {
+            kirim.tipe_bayar == 'Transfer Bank' &&
+            <Text
+              style={{
+                color: colors.primary,
+                fontSize: windowWidth / 20,
+                fontFamily: fonts.secondary[600],
+                padding: 10,
+              }}>
+              {/* Rp. {new Intl.NumberFormat().format(kirim.harga_total + kirim.total_ongkir)} */}
 
-            Rp. {new Intl.NumberFormat().format(kirim.total_ongkir == null ? 0 : kirim.harga_total + kirim.total_ongkir)}
-          </Text>
+              Rp. {new Intl.NumberFormat().format(kirim.total_ongkir == null ? 0 : kirim.harga_total + kirim.total_ongkir)}
+            </Text>
+          }
+          {
+            kirim.tipe_bayar == 'Ambil di toko' &&
+            <Text
+              style={{
+                color: colors.primary,
+                fontSize: windowWidth / 20,
+                fontFamily: fonts.secondary[600],
+                padding: 10,
+              }}>
+              {/* Rp. {new Intl.NumberFormat().format(kirim.harga_total + kirim.total_ongkir)} */}
+
+              Rp. {new Intl.NumberFormat().format(kirim.harga_total)}
+            </Text>
+          }
         </View>
 
-
         <View style={{ padding: 10 }}>
-          <MyInput label="Catatan" placeholder="masukan catatan" onChangeText={x => {
-            setKirim({
-              ...kirim,
-              catatan: x
-            })
-          }} />
-          <MyGap jarak={10} />
           <MyButton
             onPress={simpan}
-            title="SIMPAN PESANAN"
+            title="Simpan Pesanan"
             warna={colors.secondary}
             Icons="cloud-upload"
             style={{
@@ -452,7 +522,6 @@ export default function Checkout({ navigation, route }) {
                       body: JSON.stringify(dt)
                     }).then((response) => response.json())
                       .then((json) => {
-
                         setOpen(true);
                         setLoading2(false);
                         console.log(json.rajaongkir.results[0].costs);

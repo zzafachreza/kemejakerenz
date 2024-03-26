@@ -13,44 +13,28 @@ import 'intl';
 import 'intl/locale-data/jsonp/en';
 import { Icon } from 'react-native-elements';
 import { showMessage } from 'react-native-flash-message';
-import { Rating, AirbnbRating } from 'react-native-ratings';
 
 export default function ({ navigation, route }) {
 
-    const item = route.params.barang;
-    console.log(route.params.barang)
-
+    const user = route.params;
     const [data, setData] = useState([]);
-    const [rating, setRating] = useState(1);
     const [kirim, setKirim] = useState({
-        fid_barang: route.params.barang.id,
-        fid_user: route.params.fid_user,
+        email: ''
     });
 
     const [loading, setLoading] = useState(false);
     const __sendServer = () => {
-        console.log({
-            fid_barang: route.params.barang.fid_barang,
-            fid_user: route.params.fid_user,
-            nilai: rating
-        });
         setLoading(true);
 
         setTimeout(() => {
-            axios.post(urlAPI + '/rating.php', {
-                fid_barang: route.params.barang.fid_barang,
-                fid_user: route.params.fid_user,
-                nilai: rating
-            }).then(res => {
+            axios.post(urlAPI + '/lupa.php', kirim).then(res => {
                 console.log(res.data);
-
+                setLoading(false);
                 showMessage({
                     type: 'success',
-                    message: 'Rating berhasil di kirim !'
+                    message: 'Silahkan cek email kamu'
                 });
-                navigation.goBack()
-            }).finally(() => {
-                setLoading(false);
+                navigation.replace('Login');
             })
         }, 1200)
     }
@@ -62,50 +46,20 @@ export default function ({ navigation, route }) {
     return (
         <SafeAreaView style={{
             flex: 1,
+            padding: 10,
             justifyContent: 'center',
-            backgroundColor: colors.white,
         }}>
-            <View style={{
-                flex: 1,
-                padding: 20,
-            }}>
-                <Image style={{
-                    width: '100%',
-                    height: 300,
-                    resizeMode: 'contain'
-                }} source={{
-                    uri: item.image
-                }} />
-                <Text
-                    style={{
-                        marginTop: 10,
-                        fontFamily: fonts.secondary[600],
-                        fontSize: windowWidth / 20,
-                        color: colors.black,
-                    }}>{item.nama_barang}</Text>
 
-            </View>
 
-            <View style={{
-                padding: 20,
-            }}>
-                <Rating
-                    showRating
-                    // jumpValue={1}
-                    minValue={1}
-                    ratingCount={5}
-                    startingValue={rating}
-                    ratingTextColor={colors.primary}
-                    onFinishRating={x => {
-                        setRating(x)
-                    }}
-                    style={{ paddingVertical: 10 }}
-                />
-
-                <MyGap jarak={10} />
-                {!loading && <MyButton onPress={__sendServer} title="Rating Barng ini" Icons="cloud-upload-outline" warna={colors.primary} />}
-                {loading && <ActivityIndicator color={colors.secondary} size="large" />}
-            </View>
+            <MyInput value={kirim.email} onChangeText={x => {
+                setKirim({
+                    ...kirim,
+                    email: x
+                })
+            }} autoFocus label="Masukan Email" iconname="mail" />
+            <MyGap jarak={10} />
+            {!loading && <MyButton onPress={__sendServer} title="Reset Password" Icons="cloud-upload-outline" warna={colors.primary} />}
+            {loading && <ActivityIndicator color={colors.secondary} size="large" />}
 
         </SafeAreaView >
     )

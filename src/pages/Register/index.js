@@ -55,15 +55,11 @@ export default function Register({ navigation }) {
     telepon: '',
     kota: ''
   });
-  const [oke, setOKE] = useState(false)
 
   const simpan = () => {
-    if (!oke) {
-      showMessage({
-        message: 'syarat & ketentuan dan kebijakan privasi wajib di centang',
-      });
-    } else if (
+    if (
       data.nama_lengkap.length === 0 &&
+      data.email.length === 0 &&
       data.password.length === 0 &&
       data.telepon.length === 0 &&
       data.kota.length === 0
@@ -79,6 +75,10 @@ export default function Register({ navigation }) {
       showMessage({
         message: 'Maaf Kota  - provinsi masih kosong !',
       });
+    } else if (data.email.length === 0) {
+      showMessage({
+        message: 'Maaf email masih kosong !',
+      });
     } else if (data.telepon.length === 0) {
       showMessage({
         message: 'Maaf Telepon masih kosong !',
@@ -88,7 +88,7 @@ export default function Register({ navigation }) {
         message: 'Maaf Password masih kosong !',
       });
     } else {
-      setLoading(true);
+      // setLoading(true);
       console.log(data);
       axios
         .post(urlAPI + '/register.php', data)
@@ -121,29 +121,23 @@ export default function Register({ navigation }) {
 
   return (
     <ImageBackground
+      source={require('../../assets/back.jpeg')}
       style={{
         flex: 1,
-        color: colors.white,
 
       }}>
       {/* <Switch onValueChange={toggleSwitch} value={isEnabled} /> */}
       <ScrollView showsVerticalScrollIndicator={false} style={styles.page}>
-        <Image
-          source={require('../../assets/logo.png')}
-          style={{
-            marginTop: 10,
-            width: 80,
-            height: 80,
-            alignSelf: 'center'
-          }}
-        />
-
+        {/* <Image
+        source={require('../../assets/logooren.png')}
+        style={styles.image}
+      /> */}
 
 
 
         <MyGap jarak={10} />
         <MyInput
-          label="Nama Lengkap *"
+          label="Nama Pribadi *"
           iconname="person"
           value={data.nama_lengkap}
           onChangeText={value =>
@@ -157,6 +151,18 @@ export default function Register({ navigation }) {
 
 
 
+        <MyGap jarak={10} />
+        <MyInput
+          label="E - mail *"
+          iconname="mail"
+          value={data.email}
+          onChangeText={value =>
+            setData({
+              ...data,
+              email: value,
+            })
+          }
+        />
 
         <MyGap jarak={10} />
         <MyInput
@@ -257,21 +263,9 @@ export default function Register({ navigation }) {
         />
 
 
-        <MyGap jarak={20} />
 
-        <TouchableOpacity onPress={() => setOKE(!oke)} style={{
-          flexDirection: 'row',
-          paddingHorizontal: 5,
-          alignItems: 'center',
-          marginBottom: 10,
-        }}>
-          <Icon type='ionicon' size={20} name={oke ? 'checkbox' : 'checkbox-outline'} />
-          <Text style={{
-            fontFamily: fonts.secondary[400],
-            fontSize: 12,
-            left: 10,
-          }}>Dengan masuk atau mendaftar, anda menyetujui syarat & ketentuan dan kebijakan privasi</Text>
-        </TouchableOpacity>
+
+        <MyGap jarak={20} />
 
         <MyButton
           warna={colors.primary}
@@ -300,8 +294,7 @@ export default function Register({ navigation }) {
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    paddingHorizontal: 20,
-    backgroundColor: colors.white,
+    padding: 20,
   },
   image: {
     width: 620 / 4,

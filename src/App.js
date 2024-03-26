@@ -14,8 +14,8 @@ export default function App() {
 
   PushNotification.createChannel(
     {
-      channelId: 'ayringthrift', // (required)
-      channelName: 'ayringthrift', // (required)
+      channelId: 'ditokoku', // (required)
+      channelName: 'ditokoku', // (required)
       channelDescription: 'A channel to categorise your notifications', // (optional) default: undefined.
       playSound: true, // (optional) default: true
       soundName: 'default', // (optional) See `soundName` parameter of `localNotification` function
@@ -74,7 +74,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <StatusBar hidden backgroundColor={colors.primary} barStyle="light-content" />
+      <StatusBar backgroundColor={colors.primary} barStyle="dark-content" />
       <Router />
       <FlashMessage position="bottom" />
     </NavigationContainer>
