@@ -104,7 +104,7 @@ export default function Pinjam({ navigation, route }) {
           message: 'Berhasil ditambahkan ke keranjang',
         });
         // navigation.replace('MainApp');
-        modalizeRef.current.close();
+        // modalizeRef.current.close();
       });
   };
 
@@ -397,7 +397,7 @@ export default function Pinjam({ navigation, route }) {
 
                       setJumlah(x)
 
-                    }} style={{ fontSize: 20, height: 40, fontFamily: fonts.secondary[600], textAlign: 'center' }} value={jumlah.toString()} />
+                    }} style={{ fontSize: 20, height: 40, fontFamily: fonts.secondary[600], textAlign: 'center', color: colors.black }} value={jumlah.toString()} />
                   </View>
                   <TouchableOpacity
                     onPress={() => {
